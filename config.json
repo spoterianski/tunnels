@@ -1,0 +1,65 @@
+{
+    "ui_port": 8000,
+    "max_death_count": 5,
+    "timeout": 3,
+    "tunnels": [{
+            "name": "Tunnel One name",
+            "note": "Monitoring server",
+            "cmd": "ssh -N -p 22 10.10.10.10 -L 7676:11.11.11.10:7777",
+            "local_port": 7676,
+            "url": "http://localhost:7676/",
+            "enabled": false
+        },
+        {
+            "name": "Tunnel Two name",
+            "note": "Jupyter server",
+            "cmd": "ssh -N -p 22 10.10.10.10 -L 9889:11.11.11.11:9889",
+            "local_port": 9889,
+            "url": "http://localhost:9889/",
+            "enabled": false
+        },
+        {
+            "name": "Tunnel Three name",
+            "note": "DB and WEB server",
+            "cmd": "ssh -N -p 22 10.10.10.10 -L 15432:11.11.11.12:5432 -L 18080:11.11.11.12:8080",
+            "local_port": 15432,
+            "url": "http://localhost:15432/",
+            "enabled": true
+        }
+    ],
+    
+    "logging_conf": {
+        "version": 1,
+        "formatters": {
+            "detailed": {
+                "class": "logging.Formatter",
+                "format": "%(asctime)s - %(levelname)s - %(processName)s - %(message)s"
+            }
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "level": "INFO",
+                "formatter": "detailed"
+            },
+            "file": {
+                "class": "logging.handlers.TimedRotatingFileHandler",
+                "filename": "logs/tunnels.log",
+                "when": "D",
+                "interval": 5,
+                "backupCount": 5,
+                "formatter": "detailed"
+            }
+        },
+        "loggers": {
+            "tunnels": {
+                "level": "INFO",
+                "handlers": [
+                    "console",
+                    "file"
+                ],
+                "propagate": true
+            }
+        }
+    }
+}
