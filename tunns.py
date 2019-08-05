@@ -93,6 +93,9 @@ class StatusHTTPRequestHandler(BaseHTTPRequestHandler):
     root_templates = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
     rx_id = re.compile('.*id=(?P<id>[0-9]+)')
 
+    def log_message(self, format, *args):
+        return
+
     def send_headers(self, is_json):
         self.send_response(200)
         if is_json:
