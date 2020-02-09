@@ -1,11 +1,10 @@
-## Description
+# Description
 
 Simple python-script to control ssh-tunnels.
 
 If you use ssh-tunnels, once there may be too many of them. They can fall off. They need to be restarted and so on.
 A simple python script runs tunnels in separated processes and periodically pings the ports to which they are routed.
 If something is wrong (fell off wi-fi, restarted vpn, etc.) - the tunnel restarts.
-
 
 Also this script provides a  web-interface for view list of tunnels and start/stop them.
 
@@ -16,7 +15,6 @@ To start you need to go to the project directory:
 ```bash
 cd tunnels
 ```
-
 
 Edit the configuration file:
 
@@ -83,18 +81,25 @@ python3 tunns.py path_to/config_file.json
 
 Web-interface displayed list of tunnels, status and state of enabled or disabled them;
 
-Open in a browser: http://localhost:[ui_port]
+Open in a browser:
+
+```bash
+    http://localhost:[ui_port]
+```
 
 where:
 
 - [ui_port] - web-interface port
 
-Default link: http://localhost:8000
+Default link:
+
+```bash
+http://localhost:8000
+```
 
 ## Requirements
 
 Python>3.2
-
 
 ## Описание
 
@@ -139,7 +144,7 @@ vi config.json
 
 где:
 
-- ui_port - порт веб-интерфейса, для открытия в браузере: http://localhost:[ui_port], по умолчанию порт 8000
+- ui_port - порт веб-интерфейса, для открытия в браузере: `http://localhost:[ui_port]`, по умолчанию порт 8000
 - max_death_count - количество падений туннуля, после которого попытки восстановления прекратятся, поумолчанияю 5 раз
 - timeout - задержка в секундах между пингами туннелей, по умолчанию 3 секунды
 - tunnels - список конфигурация туннелей, конфигурация туннеля расмотрена ниже
@@ -186,10 +191,18 @@ python3 tunns.py path_to/config_file.json
 ### Веб-интерфейс
 
 Веб-интерфейс отображает список туннелей, их состояние и признак включен/выключен
-Для перехода в интрфейс, откроете в браузере ссылку: http://localhost:[ui_port]
+Для перехода в интрфейс, откроете в браузере ссылку: 
+
+```bash
+http://localhost:[ui_port]
+```
 
 где:
 
 - [ui_port] - адрес порта на котором запущен интерфейс
 
-Поумолчанию ссылка: http://localhost:8000
+Поумолчанию ссылка:
+
+```bash
+http://localhost:8000
+```
