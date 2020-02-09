@@ -96,12 +96,9 @@ class StatusHTTPRequestHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         return
 
-    def send_headers(self, is_json):
+    def send_headers(self, content_type):
         self.send_response(200)
-        if is_json:
-            self.send_header('Content-type', 'application/json')
-        else:
-            self.send_header('Content-type', 'text/html')
+        self.send_header('Content-type', content_type)
         self.end_headers()
     
     
@@ -120,9 +117,28 @@ class StatusHTTPRequestHandler(BaseHTTPRequestHandler):
         return th_id
     
 
+    def get_content_type(self, filename):
+        p, ext = os.path.splitext(filename)
+        ext = ext.lower()
+        if ext == ".html":
+            return "text/html"
+        elif ext == ".js":
+            return "text/javascript"
+        elif ext == ".svg":
+            return "image/svg+xml"
+        elif ext == ".jpg" or ext == ".jpeg":
+            return "image/jpeg"
+        elif ext == ".png":
+            return "image/png"
+        elif ext == ".ico":
+            return "image/x-icon"
+        else:
+            return "text/plain"
+        
+    
     def do_GET(self):
         if self.path == '/list':
-            self.send_headers(True)
+            self.send_headers("application/json")
             text = '['
             for tun_id in self.thrs:
                 tun = self.thrs[tun_id]
@@ -148,7 +164,7 @@ class StatusHTTPRequestHandler(BaseHTTPRequestHandler):
             return
 
         elif self.path.startswith('/enabled'):
-            self.send_headers(True)
+            self.send_headers("application/json")
             th_id = self.get_id()
             if th_id is not None:
                 enabled = self.thrs[th_id]['enabled']
@@ -157,15 +173,16 @@ class StatusHTTPRequestHandler(BaseHTTPRequestHandler):
                 return
         
         elif self.path.startswith('/status'):
-            self.send_headers(True)
+            self.send_headers("application/json")
             th_id = self.get_id()
             if th_id is not None:
                 port = self.thrs[th_id]['local_port']
                 is_on = ping(port)
                 self.wfile.write(bytes('{' + '"on": {}'.format(is_on) + '}', 'utf8'))
+                return
         
         elif self.path.startswith('/switch'):
-            self.send_headers(True)
+            self.send_headers("application/json")
             th_id = self.get_id()
             if th_id is not None:
                 if self.thrs[th_id]['enabled']:
@@ -177,17 +194,21 @@ class StatusHTTPRequestHandler(BaseHTTPRequestHandler):
                     bytes('{' + '"enabled": {}'.format(self.thrs[th_id]['enabled']) + '}', 'utf8'))
                 return
         else:
-            self.send_headers(False)
             if self.path == '/':
+                #self.send_headers("text/html")
                 filename = self.root_templates + '/index.html'
             else:
                 filename = self.root_templates + self.path
             if os.path.exists(filename):
-                with open(filename, 'r') as fh:
-                    html_lines = fh.read()
-                    html = bytes(html_lines, 'utf8')
-                    self.wfile.write(html)
-                
+                content_type = self.get_content_type(filename)
+                self.send_headers(content_type)
+                if content_type.startswith('image'):
+                    with open(filename, 'rb') as fh:
+                        self.wfile.write(fh.read())
+                else:
+                    with open(filename, 'r') as fh:
+                        self.wfile.write(bytes(fh.read(), 'utf8'))
+            
 
 def run_http(thrs, port):
     StatusHTTPRequestHandler.thrs = thrs
